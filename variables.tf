@@ -27,3 +27,15 @@ variable "ssh_public_key_path" {
   type        = string
   default     = "/home/flavio/.ssh/id_rsa.pub"
 }
+
+variable "asg_min" {
+  description = "Capacité minimale de l'Auto Scaling Group"
+  type        = number
+  default     = 1
+}
+
+variable "asg_max" {
+  description = "Capacité maximale de l'Auto Scaling Group"
+  type        = number
+  default     = 2
+}
