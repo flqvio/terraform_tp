@@ -1,36 +1,34 @@
-# main.tf
-
-resource "aws_key_pair" "deployer" {
-  key_name   = "flavio-key"
-  public_key = file("/home/flavio/.ssh/id_rsa.pub")
+provider "aws" {
 }
 
-resource "aws_instance" "flavio-machine" {
-  ami           = "ami-0446057e5961dfab6"
-  instance_type = "t3.micro"
-  key_name      = aws_key_pair.deployer.key_name
-
-  subnet_id = "subnet-0d4c3122cb0327eb2"
-
-  tags = {
-    Name = "flavio-machine"
-  }
-
-  vpc_security_group_ids = [aws_security_group.allow_ssh.id]
+resource "aws_key_pair" "student_key" {
+  key_name   = "student_19"
+  public_key = file(var.ssh_public_key_path)
 }
 
-resource "aws_security_group" "allow_ssh" {
-  name_prefix = "allow_ssh_"
-  vpc_id      = "vpc-04e7fa58d477c06b7"
+resource "aws_security_group" "sg" {
+  name        = "allow_ssh_http_student_19"
+  description = "Security group for SSH and HTTP access"
+  vpc_id      = var.vpc_id
 
   ingress {
+    description = "Autoriser SSH"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    description = "Autoriser HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
+    description = "Autoriser tout le trafic sortant"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -38,6 +36,20 @@ resource "aws_security_group" "allow_ssh" {
   }
 }
 
+resource "aws_instance" "web" {
+  ami                         = var.ami
+  instance_type               = var.instance_type
+  subnet_id                   = var.subnet_id
+  key_name                    = aws_key_pair.student_key.key_name
+  vpc_security_group_ids      = [aws_security_group.sg.id]
+  associate_public_ip_address = true
+
+  tags = {
+    Name = "Student19-EC2"
+  }
+}
+
 output "instance_public_ip" {
-  value = aws_instance.flavio-machine.public_ip
+  description = "Adresse IP publique de l'instance EC2"
+  value       = aws_instance.web.public_ip
 }
