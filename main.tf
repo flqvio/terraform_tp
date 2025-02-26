@@ -45,7 +45,7 @@ resource "aws_instance" "web" {
   associate_public_ip_address = true
 
   tags = {
-    Name = "Student19-EC2"
+    Name = "Student19-ec2"
   }
 }
 

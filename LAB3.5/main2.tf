@@ -8,7 +8,7 @@ module "ec2_instance" {
   subnet_id      = "subnet-0d4c3122cb0327eb2"
   instance_type  = "t3.micro"
   instance_name  = "student19-flavio-instance"
-  key_name       = "student_19"
+  key_name       = "student_19_flavio_key"
 }
 
 output "instance_public_dns" {
